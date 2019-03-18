@@ -76,7 +76,9 @@
         const btnSubmit = document.getElementById('submit-form-seed');
         const outputBox = document.getElementById('output-generated');
         const baseUrlLink = document.getElementById('api-base-url');
+
         let currentIteration = 0;
+        let timestampStart = 0;
 
         function init(){
             btnSubmit.addEventListener('click', formSubmission);
@@ -93,6 +95,7 @@
             if(txtSeed.value !== '' || txtSeed.value !== undefined){
                 btnSubmit.disabled = true;
                 currentIteration = currentIteration + 1;
+                timestampStart = Date.now();
 
                 let output = document.createElement('div');
                 output.id = `output_${currentIteration}`;
@@ -126,12 +129,18 @@
                     .then(function(response) {
                         if(response.ok) {
                             response.json().then(function(data) {
+                                const timestampEnd = Date.now();
+                                const timestampDuration = Math.floor((timestampEnd - timestampStart) / 1000);
+
                                 postResult({
                                     id: currentIteration,
                                     seed: seed,
                                     temperature: temperature,
                                     top_k: top_k,
-                                    result: data.data
+                                    result: data.data,
+                                    timestampStart: timestampToDatetime(timestampStart),
+                                    timestampEnd:  timestampToDatetime(timestampEnd),
+                                    timestampDuration, timestampDuration
                                 });
                             });
                         } else {
@@ -153,6 +162,9 @@
             output += `<h4>Iteration ${data.id}</h4>`;
             output += `<p>Temperature: ${data.temperature}</p>`;
             output += `<p>Top K: ${data.top_k}</p>`;
+            output += `<p>Request Start: ${data.timestampStart}</p>`;
+            //output += `<p>Request End: ${data.timestampEnd}</p>`;
+            output += `<p>Request Duration: ${data.timestampDuration} seconds</p>`;
             output += `<p>Seed text: <br/>${data.seed}</p>`;
             output += `<br/><p><b>Result:</b><br/><br/>${data.result}</p>`;
             output += `<hr/>`;
@@ -160,6 +172,14 @@
 
             btnSubmit.disabled = false;
             window.scrollTo(0);
+        }
+
+        function timestampToDatetime(t){
+            var dt = new Date(t*1000);
+            var hr = dt.getHours();
+            var m = "0" + dt.getMinutes();
+            var s = "0" + dt.getSeconds();
+            return hr+ ':' + m.substr(-2) + ':' + s.substr(-2); 
         }
 
         init();
