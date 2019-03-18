@@ -12,17 +12,20 @@
         p {
             margin: 0 5px;
         }
+        textarea {
+            resize: vertical;
+        }
         .container {
             display: grid;
             grid-template-columns: auto auto;
-        }
-        textarea {
-            resize: vertical;
         }
         .result{
             background: #dddddd; 
             padding: 5px 15px;
             margin-bottom: 15px;
+        }
+        .explain {
+            max-width: 500px;
         }
     </style>
 </head>
@@ -36,13 +39,13 @@
                 <br />
                 <label for="txt-temperature">Temperature (0.0 - 1)</label>
                 <input type="text" id="txt-temperature" name="txt-temperature" value="0.7" placeholder="0.7" />
-                <p>
+                <p class="explain">
                     Float value controlling randomness in boltzmann distribution. Lower temperature results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive. Higher temperature results in more random completions.
                 </p>
                 <br />
                 <label for="txt-top_k">top_k (0 - 40)</label>
                 <input type="text" id="txt-top_k" name="txt-top_k" value="40" placeholder="40" />
-                <p>
+                <p class="explain">
                     Integer value controlling diversity. 1 means only 1 word is considered for each step (token), resulting in deterministic completions, while 40 means 40 words are considered at each step. 0 is a special setting meaning no restrictions. 40 generally is a good value.
                 </p>
                 <br />
