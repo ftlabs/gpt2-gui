@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>GTP2 GUI Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        fieldset {
+            height: 200px;
+        }
+        .half-width {
+            display: inline-block;
+            width: 49%;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="half-width">
+            <fieldset style="display: grid; grid-template-columns: auto auto;">
+                <legend>Form</legend>
+                <label for="txt-seed">Seed text* </label>
+                <input type="text" id="txt-seed" name="txt-seed" value="Fred is walking " placeholder="Add text seed here..." style="width: 100%;" required/>
+                <br />
+                <label for="txt-temperature">Temperature (0.0 - 1)</label>
+                <input type="text" id="txt-temperature" name="txt-temperature" value="0.7" placeholder="0.7" />
+                <br />
+                <label for="txt-top_k">top_k (0 - 40)</label>
+                <input type="text" id="txt-top_k" name="txt-top_k" value="40" placeholder="40" />
+                <br />
+                <button id="submit-form-seed" value="Submit">Submit</button>
+            </fieldset>
+        </div>
+        <div class="half-width">
+            <fieldset>
+                <legend>API</legend>
+                <span>POST URL: </span>
+                <a id="api-base-url" href="http://127.0.0.1:5000/gtp2">http://127.0.0.1:5000/gtp2</a>
+                <p>POST body</p>
+                <pre>
+{
+    "seed": "Fred is walking ",
+    "temperature": 0.7,
+    "top_k": 40
+}
+                </pre>
+            </fieldset>
+        </div>
+    </div>
+    <div id="output-generated" style="background: #dddddd; padding: 15px; margin:15px 0; white-space: pre-line;"></div>
+    <script>
+        const txtSeed = document.getElementById('txt-seed');
+        const txtTemperature = document.getElementById('txt-temperature');
+        const txtTopk = document.getElementById('txt-top_k');
+        const btnSubmit = document.getElementById('submit-form-seed');
+        const outputBox = document.getElementById('output-generated');
+        const baseUrlLink = document.getElementById('api-base-url');
+
+        function init(){
+            btnSubmit.addEventListener('click', formSubmission);
+            updateBaseUrl();
+        }
+        
+        function updateBaseUrl(){
+            const urlStr = `${window.location.origin}/gtp2`;
+            baseUrlLink.href = urlStr;
+            baseUrlLink.innerHTML = urlStr;
+        }
+
+        function formSubmission(){
+            if(txtSeed.value !== '' || txtSeed.value !== undefined){
+                btnSubmit.disabled = true;
+                outputBox.innerHTML = 'waiting for repsonse (may take a minute)...';
+                getGPT2Sample(txtSeed.value, txtTemperature.value, txtTopk.value);
+            } else {
+                postResult('Seed text must be included');
+            }
+        }
+
+        function getGPT2Sample(seed = 'seed', temperature = '1', top_k = '40'){
+            const path = `${window.location.origin}/gtp2`;
+            const content = {
+                method: 'POST',
+                headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    seed: seed,
+                    temperature: parseFloat(temperature).toFixed(1),
+                    top_k: parseInt(top_k)
+                })
+            };
+
+            try {
+                fetch(path, content)
+                    .then(function(response) {
+                        if(response.ok) {
+                            response.json().then(function(data) {
+                                postResult(data.data);
+                            });
+                        } else {
+                            postResult('Error on API call');
+                        }
+                    })
+                    .catch(function(err) {
+                        postResult(`Error: ${error}`);
+                    });
+            } catch (error) {
+                postResult('Error on Fetch call');
+            }
+        }
+
+        function postResult(text){
+            outputBox.innerHTML = text;
+            btnSubmit.disabled = false;
+        }
+
+        init();
+    </script>
+</body>
+</html>
