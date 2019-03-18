@@ -63,11 +63,16 @@ So had to settle for a custom EC2 build.
 + **Step 4**
     - Default settings
 + **Step 5**
-    - TODO: what tags does Labs use
+    - `teamDL: labs@ft.com`
+    - `systemCode: ftlabs-gpt2`
+    - `environment: p`
 + **Step 6**
-     - TODO: what groups does Labs use to give SSH/HTTP/HTTPS access
+    - Use `ftlabs-gpt2SG` security gruop which grants:
+        - SSH - FT internal IPs
+        - HTTP - 0.0.0.0/0, ::/0
+        - HTTPS - 0.0.0.0/0, ::/0
 + **Step 7**
-    - Create using new key or ley you already have access to 
+    - Create using new key (currently `ftlabs-gpt.pem`) or ley you already have access to 
 
 
 ### Installing the repo and requirements
@@ -109,5 +114,3 @@ sudo python3 application.py
 ## Appendix
 
 + [Deploying flask to AWS tutorial](https://www.codementor.io/dushyantbgs/deploying-a-flask-application-to-aws-gnva38cf0)
-
-
