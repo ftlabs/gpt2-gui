@@ -5,6 +5,13 @@
 To investigate the generated content provided by the GPT-2 117M learned model - [GPT-2 repo](https://github.com/openai/gpt-2.git).
 
 
+## TODO
+
++ Prepend result child (resutl + params)
++ Investigate large paste error (too much text)
++ 
+
+
 ## Setup
 
 + Clone this repo

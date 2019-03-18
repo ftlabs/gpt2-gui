@@ -6,12 +6,23 @@
     <title>GTP2 GUI Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        h4 {
+            margin: 10px 0px;
+        }
+        p {
+            margin: 0 5px;
+        }
         .container {
             display: grid;
             grid-template-columns: auto auto;
         }
         textarea {
             resize: vertical;
+        }
+        .result{
+            background: #dddddd; 
+            padding: 5px 15px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -48,7 +59,7 @@
             </fieldset>
         </div>
     </div>
-    <div id="output-generated" style="background: #dddddd; padding: 15px; margin:15px 0; white-space: pre-line;"></div>
+    <div id="output-generated" style="margin:15px 0; white-space: pre-line;"></div>
     <script>
         const txtSeed = document.getElementById('txt-seed');
         const txtTemperature = document.getElementById('txt-temperature');
@@ -56,6 +67,7 @@
         const btnSubmit = document.getElementById('submit-form-seed');
         const outputBox = document.getElementById('output-generated');
         const baseUrlLink = document.getElementById('api-base-url');
+        let currentIteration = 0;
 
         function init(){
             btnSubmit.addEventListener('click', formSubmission);
@@ -71,7 +83,14 @@
         function formSubmission(){
             if(txtSeed.value !== '' || txtSeed.value !== undefined){
                 btnSubmit.disabled = true;
-                outputBox.innerHTML = 'waiting for repsonse (may take a minute)...';
+                currentIteration = currentIteration + 1;
+
+                let output = document.createElement('div');
+                output.id = `output_${currentIteration}`;
+                output.className = 'result';
+                output.innerHTML = `<hr/><b>Iteration ${currentIteration}</b><p>Waiting for repsonse (may take a minute)...</p><hr/>`;
+                outputBox.prepend(output);
+
                 getGPT2Sample(txtSeed.value, txtTemperature.value, txtTopk.value);
             } else {
                 postResult('Seed text must be included');
@@ -98,7 +117,13 @@
                     .then(function(response) {
                         if(response.ok) {
                             response.json().then(function(data) {
-                                postResult(data.data);
+                                postResult({
+                                    id: currentIteration,
+                                    seed: seed,
+                                    temperature: temperature,
+                                    top_k: top_k,
+                                    result: data.data
+                                });
                             });
                         } else {
                             postResult('Error on API call');
@@ -112,9 +137,20 @@
             }
         }
 
-        function postResult(text){
-            outputBox.innerHTML = text;
+        function postResult(data){
+            const outputArea = document.getElementById(`output_${data.id}`);
+
+            let output = `<hr/>`;
+            output += `<h4>Iteration ${data.id}</h4>`;
+            output += `<p>Temperature: ${data.temperature}</p>`;
+            output += `<p>Top K: ${data.top_k}</p>`;
+            output += `<p>Seed text: <br/>${data.seed}</p>`;
+            output += `<br/><p><b>Result:</b><br/><br/>${data.result}</p>`;
+            output += `<hr/>`;
+            outputArea.innerHTML = output;
+
             btnSubmit.disabled = false;
+            window.scrollTo(0);
         }
 
         init();
