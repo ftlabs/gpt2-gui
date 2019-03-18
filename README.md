@@ -98,8 +98,12 @@ sudo python3 application.py
 ***Keep running***
 
 ```
-
+screen
+sudo python3 application.py
 ```
+*cmd + shift + a* then *d*
+
+* Use ```screen -r``` to see running script
 
 
 ## Appendix
