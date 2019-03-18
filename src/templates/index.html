@@ -6,19 +6,18 @@
     <title>GTP2 GUI Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        fieldset {
-            height: 200px;
+        .container {
+            display: grid;
+            grid-template-columns: auto auto;
         }
-        .half-width {
-            display: inline-block;
-            width: 49%;
-            vertical-align: top;
+        textarea {
+            resize: vertical;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="half-width">
+        <div>
             <fieldset style="display: grid; grid-template-columns: auto auto;">
                 <legend>Form</legend>
                 <label for="txt-seed">Seed text* </label>
@@ -33,7 +32,7 @@
                 <button id="submit-form-seed" value="Submit">Submit</button>
             </fieldset>
         </div>
-        <div class="half-width">
+        <div>
             <fieldset>
                 <legend>API</legend>
                 <span>POST URL: </span>
