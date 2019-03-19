@@ -27,9 +27,7 @@ pip3 install virtualenv
 cd src
 virtualenv venv
 source venv/bin/activate
-pip3 install Flask
-pip3 install flask-cors
-pip3 install tensorflow==1.13.1
+pip3 install Flask flask-cors tensorflow==1.13.1
 pip3 install -r requirements.txt
 python3 download_model.py 117M
 ```
