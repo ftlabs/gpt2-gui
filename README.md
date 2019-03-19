@@ -53,7 +53,7 @@ python3 application.py
 This repo is based on the [original GPT-2 repo](https://github.com/openai/gpt-2.git), you can read the setup instructions in this repo's *GPT2-README.md*
 
 
-## Creating the live serve
+## Creating the live server
 
 Tried to get this up on Heroku or a Lambda but both have storage size limits which are too small for the 500MB model + repo code and requirements.
 
@@ -115,12 +115,41 @@ sudo python3 application.py
 ***Keep running***
 
 ```
-screen
+screen -S gpt2-gui-server
 sudo python3 application.py
 ```
 *cmd + shift + a* then *d*
 
 * Use ```screen -r``` to see running script
+
+
+### Updating
+
++ ssh into server
+
+//todo - close running screens
+
+```
+cd gpt2-gui
+git pull origin master
+cd src
+screen -S gpt2-gui-server
+sudo python3 application.py
+```
+
+Server is now running and you can exit the ssh session.
+
+
+### Checking
+
++ ```screen -ls``` - see current running screens
++ ```screen -r <name>``` - access a specific screen
+
+#### Close an exisitng screen
+
++ ```screen -r <name>``` - access a specific screen
++ *cmd + shift + a* then *k*
++ *y*
 
 
 ## Appendix
