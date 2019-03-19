@@ -8,7 +8,6 @@ To investigate the generated content provided by the GPT-2 117M learned model - 
 ## TODO
 
 + Investigate large paste error (too much text)
-+ Launch on reboot
 
 ### Feature creep
 
@@ -103,38 +102,39 @@ sudo pip3 install -r requirements.txt
 sudo python3 download_model.py 117M
 ```
 
+### Add a cron job to restart the server on reboot
+
++ `crontab -e`
++ `i`
++ paste this line: `screen -dmS gpt2-gui-server bash -c 'cd ~/gpt2-gui/src; sudo python3 application.py; exec sh'`
++ press esc
++ type `:wq`
+
+
 ### Running
 
-***Test run***
++ Use ```screen -r``` to see running script (should be one from booting up server)
++ if not:
 
 ```
 cd ~/gpt2-gui/src
-sudo python3 application.py
-```
-
-***Keep running***
-
-```
-screen -S gpt2-gui-server
-sudo python3 application.py
+screen -dmS gpt2-gui-server bash -c 'cd ~/gpt2-gui/src; sudo python3 application.py; exec sh'
 ```
 *cmd + shift + a* then *d*
-
-* Use ```screen -r``` to see running script
 
 
 ### Updating
 
 + ssh into server
-
-//todo - close running screens
++ screen -r gpt2-gui-server
++ *cmd + shift + a* then *d*
++ *y*
 
 ```
 cd gpt2-gui
 git pull origin master
 cd src
-screen -S gpt2-gui-server
-sudo python3 application.py
+screen -dmS gpt2-gui-server bash -c 'cd ~/gpt2-gui/src; sudo python3 application.py; exec sh'
 ```
 
 Server is now running and you can exit the ssh session.
