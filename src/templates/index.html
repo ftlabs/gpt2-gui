@@ -104,7 +104,7 @@
             if(txtSeed.value !== '' || txtSeed.value !== undefined){
                 btnSubmit.disabled = true;
                 currentIteration = currentIteration + 1;
-                timestampStart = Date.now();
+                timestampStart = new Date();
 
                 let output = document.createElement('div');
                 output.id = `output_${currentIteration}`;
@@ -144,8 +144,8 @@
                     .then(function(response) {
                         if(response.ok) {
                             response.json().then(function(data) {
-                                const timestampEnd = Date.now();
-                                const timestampDuration = Math.floor((timestampEnd - timestampStart) / 1000);
+                                const timestampEnd = new Date();
+                                const timestampDuration = timeDiff(timestampStart, timestampEnd);
 
                                 postResult({
                                     id: currentIteration,
@@ -153,8 +153,8 @@
                                     temperature: temperature,
                                     top_k: top_k,
                                     result: data.data,
-                                    timestampStart: timestampToDatetime(timestampStart),
-                                    timestampEnd:  timestampToDatetime(timestampEnd),
+                                    timestampStart: timestampStart.toGMTString(),
+                                    timestampEnd:  timestampEnd.toGMTString(),
                                     timestampDuration, timestampDuration
                                 });
                             });
@@ -178,23 +178,19 @@
             output += `<p>Temperature: ${data.temperature}</p>`;
             output += `<p>Top K: ${data.top_k}</p>`;
             output += `<p>Request Start: ${data.timestampStart}</p>`;
-            //output += `<p>Request End: ${data.timestampEnd}</p>`;
-            output += `<p>Request Duration: ${data.timestampDuration} seconds</p>`;
+            output += `<p>Request End: ${data.timestampEnd}</p>`;
+            output += `<p>Approx. Request Duration: ${data.timestampDuration} seconds</p>`;
             output += `<br/><p><b>Seed text:</b><br/><br/>${data.seed}</p>`;
             output += `<br/><p><b>Result:</b><br/><br/>${data.result}</p>`;
             output += `<hr/>`;
             outputArea.innerHTML = output;
 
             btnSubmit.disabled = false;
-            window.scrollTo(0);
+            window.scrollTo(0, 0);
         }
 
-        function timestampToDatetime(t){
-            var dt = new Date(t*1000);
-            var hr = dt.getHours();
-            var m = "0" + dt.getMinutes();
-            var s = "0" + dt.getSeconds();
-            return hr+ ':' + m.substr(-2) + ':' + s.substr(-2); 
+        function timeDiff(startDate, endDate){
+            return Math.floor((endDate.getTime() - startDate.getTime()) / 1000);
         }
 
         function updateAPIBody(data){

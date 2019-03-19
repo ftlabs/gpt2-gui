@@ -8,7 +8,6 @@ To investigate the generated content provided by the GPT-2 117M learned model - 
 ## TODO
 
 + Investigate large paste error (too much text)
-+ Fix timestamps
 + Launch on reboot
 
 ### Feature creep
