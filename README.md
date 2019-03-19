@@ -5,11 +5,7 @@
 To investigate the generated content provided by the GPT-2 117M learned model - [GPT-2 repo](https://github.com/openai/gpt-2.git).
 
 
-## TODO
-
-+ Investigate large paste error (too much text)
-
-### Feature creep
+## Feature creep
 
 + Download each iteration as .txt
 + Download all iterations as .txt
