@@ -13,7 +13,6 @@ To investigate the generated content provided by the GPT-2 117M learned model - 
 
 ### Feature creep
 
-+ API section on right should update with last posted request
 + Download each iteration as .txt
 + Download all iterations as .txt
 + On live, create request and output logs
