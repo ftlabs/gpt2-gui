@@ -89,15 +89,10 @@ So had to settle for a custom EC2 build.
 ### Installing the repo and requirements
 
 ```
-sudo yum install python3
-sudo yum install git
-sudo yum install gcc
-sudo yum install python3-devel
+sudo yum install python3 git gcc python3-devel
 git clone https://github.com/ftlabs/gpt2-gui.git
 cd ~/gpt2-gui/src
-sudo pip3 install Flask
-sudo pip3 install flask-cors
-sudo pip3 install tensorflow==1.13.1
+sudo pip3 install Flask flask-cors tensorflow==1.13.1
 sudo pip3 install -r requirements.txt
 sudo python3 download_model.py 117M
 ```
