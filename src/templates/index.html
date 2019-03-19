@@ -12,6 +12,9 @@
         p {
             margin: 0 5px;
         }
+        pre {
+            white-space: pre-wrap;
+        }
         textarea {
             resize: vertical;
         }
@@ -57,7 +60,8 @@
                 <legend>API</legend>
                 <span>POST URL: </span>
                 <a id="api-base-url" href="http://127.0.0.1:5000/gtp2">http://127.0.0.1:5000/gtp2</a>
-                <p>POST body</p>
+                <br /><br />
+                <span>POST body</span>
                 <pre>
 {
     "seed": "Fred is walking ",
@@ -83,6 +87,11 @@
         function init(){
             btnSubmit.addEventListener('click', formSubmission);
             updateBaseUrl();
+            updateAPIBody({
+                seed: txtSeed.value,
+                temperature: txtTemperature.value,
+                top_k: txtTopk.value
+            });
         }
         
         function updateBaseUrl(){
@@ -104,6 +113,12 @@
                 outputBox.prepend(output);
 
                 getGPT2Sample(txtSeed.value, txtTemperature.value, txtTopk.value);
+
+                updateAPIBody({
+                    seed: txtSeed.value,
+                    temperature: txtTemperature.value,
+                    top_k: txtTopk.value
+                });
             } else {
                 postResult('Seed text must be included');
             }
@@ -165,7 +180,7 @@
             output += `<p>Request Start: ${data.timestampStart}</p>`;
             //output += `<p>Request End: ${data.timestampEnd}</p>`;
             output += `<p>Request Duration: ${data.timestampDuration} seconds</p>`;
-            output += `<p>Seed text: <br/>${data.seed}</p>`;
+            output += `<br/><p><b>Seed text:</b><br/><br/>${data.seed}</p>`;
             output += `<br/><p><b>Result:</b><br/><br/>${data.result}</p>`;
             output += `<hr/>`;
             outputArea.innerHTML = output;
@@ -180,6 +195,18 @@
             var m = "0" + dt.getMinutes();
             var s = "0" + dt.getSeconds();
             return hr+ ':' + m.substr(-2) + ':' + s.substr(-2); 
+        }
+
+        function updateAPIBody(data){
+            const preDom = document.getElementsByTagName('pre')[0];
+
+            let json = `{\n`;
+            json += `\t"seed": "${data.seed}",\n`;
+            json += `\t"temperature": ${data.temperature},\n`;
+            json += `\t"top_k": ${data.top_k}\n`;
+            json += `}`;
+
+            preDom.innerHTML = json;
         }
 
         init();
