@@ -6,32 +6,48 @@ import os
 import numpy as np
 import tensorflow as tf
 
-import model, sample, encoder
+import model
+import sample
+import encoder
 
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/")
-def include_example():
-	return render_template("index.html")
 
-@app.route("/gtp2", methods = ['POST'])
+@app.route("/")
+def include_index():
+    return render_template("index.html")
+
+
+@app.route("/model/small")
+def include_model_small():
+    return render_template("small.html")
+
+
+@app.route("/model/medium")
+def include_model_medium():
+    return render_template("medium.html")
+
+
+@app.route("/gtp2", methods=['POST'])
 def convert():
     json = request.get_json()
     if 'seed' in json.keys():
         print(json)
-        model_result = interact_model(json['seed'], float(json['temperature']), json['top_k'])
+        model_result = interact_model(
+            json['seed'], float(json['temperature']), json['top_k'])
         return jsonify(data=model_result)
     return 'error'
-    
+
+
 def interact_model(raw_text, temperature, top_k):
-    model_name='117M'
-    seed=None
-    nsamples=1
-    batch_size=1
-    length=None
-    #temperature=0.7
-    #top_k=40
+    model_name = '117M'
+    seed = None
+    nsamples = 1
+    batch_size = 1
+    length = None
+    # temperature=0.7
+    # top_k=40
 
     """
     Interactively run the model
@@ -63,7 +79,8 @@ def interact_model(raw_text, temperature, top_k):
     if length is None:
         length = hparams.n_ctx // 2
     elif length > hparams.n_ctx:
-        raise ValueError("Can't get samples longer than window size: %s" % hparams.n_ctx)
+        raise ValueError(
+            "Can't get samples longer than window size: %s" % hparams.n_ctx)
 
     with tf.Session(graph=tf.Graph()) as sess:
         context = tf.placeholder(tf.int32, [batch_size, None])
@@ -82,7 +99,7 @@ def interact_model(raw_text, temperature, top_k):
 
         while True:
             #raw_text = input("Model prompt >>> ")
-            #while not raw_text:
+            # while not raw_text:
                 #print('Prompt should not be empty!')
                 #raw_text = input("Model prompt >>> ")
             context_tokens = enc.encode(raw_text)
@@ -94,11 +111,13 @@ def interact_model(raw_text, temperature, top_k):
                 for i in range(batch_size):
                     generated += 1
                     text = enc.decode(out[i])
-                    print("=" * 40 + " SAMPLE " + str(generated) + " " + "=" * 40)
+                    print("=" * 40 + " SAMPLE " +
+                          str(generated) + " " + "=" * 40)
                     print(text)
                     return text
             print("=" * 80)
 
+
 if __name__ == '__main__':
-    #fire.Fire(interact_model)
+    # fire.Fire(interact_model)
     app.run(host="0.0.0.0", port=80)

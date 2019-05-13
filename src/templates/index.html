@@ -1,211 +1,50 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>GTP2 GUI Test</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        h4 {
-            margin: 10px 0px;
-        }
-        p {
-            margin: 0 5px;
-        }
-        pre {
-            white-space: pre-wrap;
-        }
-        textarea {
-            resize: vertical;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: auto auto;
-        }
-        .result{
-            background: #dddddd; 
-            padding: 5px 15px;
-            margin-bottom: 15px;
-        }
-        .explain {
-            max-width: 500px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div>
-            <fieldset style="display: grid; grid-template-columns: auto auto;">
-                <legend>Form</legend>
-                <label for="txt-seed">Seed text* (max 1024 characters) </label>
-                <textarea rows="4" cols="50" maxlength="1024" id="txt-seed" name="txt-seed" placeholder="Add text seed here..." style="width: 100%;" required>Fred is walking</textarea>
-                <br />
-                <label for="txt-temperature">Temperature (0.0 - 1)</label>
-                <input type="text" id="txt-temperature" name="txt-temperature" value="0.7" placeholder="0.7" />
-                <p class="explain">
-                    Float value controlling randomness in boltzmann distribution. Lower temperature results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive. Higher temperature results in more random completions.
-                </p>
-                <br />
-                <label for="txt-top_k">top_k (0 - 40)</label>
-                <input type="text" id="txt-top_k" name="txt-top_k" value="40" placeholder="40" />
-                <p class="explain">
-                    Integer value controlling diversity. 1 means only 1 word is considered for each step (token), resulting in deterministic completions, while 40 means 40 words are considered at each step. 0 is a special setting meaning no restrictions. 40 generally is a good value.
-                </p>
-                <br />
-                <button id="submit-form-seed" value="Submit">Submit</button>
-            </fieldset>
-        </div>
-        <div>
-            <fieldset>
-                <legend>API</legend>
-                <span>POST URL: </span>
-                <a id="api-base-url" href="http://127.0.0.1:5000/gtp2">http://127.0.0.1:5000/gtp2</a>
-                <br /><br />
-                <span>POST body</span>
-                <pre>
-{
-    "seed": "Fred is walking ",
-    "temperature": 0.7,
-    "top_k": 40
-}
-                </pre>
-            </fieldset>
-        </div>
-    </div>
-    <div id="output-generated" style="margin:15px 0; white-space: pre-line;"></div>
-    <script>
-        const txtSeed = document.getElementById('txt-seed');
-        const txtTemperature = document.getElementById('txt-temperature');
-        const txtTopk = document.getElementById('txt-top_k');
-        const btnSubmit = document.getElementById('submit-form-seed');
-        const outputBox = document.getElementById('output-generated');
-        const baseUrlLink = document.getElementById('api-base-url');
-
-        let currentIteration = 0;
-        let timestampStart = 0;
-
-        function init(){
-            btnSubmit.addEventListener('click', formSubmission);
-            updateBaseUrl();
-            updateAPIBody({
-                seed: txtSeed.value,
-                temperature: txtTemperature.value,
-                top_k: txtTopk.value
-            });
-        }
-        
-        function updateBaseUrl(){
-            const urlStr = `${window.location.origin}/gtp2`;
-            baseUrlLink.href = urlStr;
-            baseUrlLink.innerHTML = urlStr;
-        }
-
-        function formSubmission(){
-            if(txtSeed.value !== '' || txtSeed.value !== undefined){
-                btnSubmit.disabled = true;
-                currentIteration = currentIteration + 1;
-                timestampStart = new Date();
-
-                let output = document.createElement('div');
-                output.id = `output_${currentIteration}`;
-                output.className = 'result';
-                output.innerHTML = `<hr/><b>Iteration ${currentIteration}</b><p>Waiting for repsonse (may take a minute)...</p><hr/>`;
-                outputBox.prepend(output);
-
-                getGPT2Sample(txtSeed.value, txtTemperature.value, txtTopk.value);
-
-                updateAPIBody({
-                    seed: txtSeed.value,
-                    temperature: txtTemperature.value,
-                    top_k: txtTopk.value
-                });
-            } else {
-                postResult('Seed text must be included');
-            }
-        }
-
-        function getGPT2Sample(seed = 'seed', temperature = '1', top_k = '40'){
-            const path = `${window.location.origin}/gtp2`;
-            const content = {
-                method: 'POST',
-                headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    seed: seed,
-                    temperature: parseFloat(temperature).toFixed(1),
-                    top_k: parseInt(top_k)
-                })
-            };
-
-            try {
-                fetch(path, content)
-                    .then(function(response) {
-                        if(response.ok) {
-                            response.json().then(function(data) {
-                                const timestampEnd = new Date();
-                                const timestampDuration = timeDiff(timestampStart, timestampEnd);
-
-                                postResult({
-                                    id: currentIteration,
-                                    seed: seed,
-                                    temperature: temperature,
-                                    top_k: top_k,
-                                    result: data.data,
-                                    timestampStart: timestampStart.toGMTString(),
-                                    timestampEnd:  timestampEnd.toGMTString(),
-                                    timestampDuration, timestampDuration
-                                });
-                            });
-                        } else {
-                            postResult('Error on API call');
-                        }
-                    })
-                    .catch(function(err) {
-                        postResult(`Error: ${error}`);
-                    });
-            } catch (error) {
-                postResult('Error on Fetch call');
-            }
-        }
-
-        function postResult(data){
-            const outputArea = document.getElementById(`output_${data.id}`);
-
-            let output = `<hr/>`;
-            output += `<h4>Iteration ${data.id}</h4>`;
-            output += `<p>Temperature: ${data.temperature}</p>`;
-            output += `<p>Top K: ${data.top_k}</p>`;
-            output += `<p>Request Start: ${data.timestampStart}</p>`;
-            output += `<p>Request End: ${data.timestampEnd}</p>`;
-            output += `<p>Approx. Request Duration: ${data.timestampDuration} seconds</p>`;
-            output += `<br/><p><b>Seed text:</b><br/><br/>${data.seed}</p>`;
-            output += `<br/><p><b>Result:</b><br/><br/>${data.result}</p>`;
-            output += `<hr/>`;
-            outputArea.innerHTML = output;
-
-            btnSubmit.disabled = false;
-            window.scrollTo(0, 0);
-        }
-
-        function timeDiff(startDate, endDate){
-            return Math.floor((endDate.getTime() - startDate.getTime()) / 1000);
-        }
-
-        function updateAPIBody(data){
-            const preDom = document.getElementsByTagName('pre')[0];
-
-            let json = `{\n`;
-            json += `\t"seed": "${data.seed}",\n`;
-            json += `\t"temperature": ${data.temperature},\n`;
-            json += `\t"top_k": ${data.top_k}\n`;
-            json += `}`;
-
-            preDom.innerHTML = json;
-        }
-
-        init();
-    </script>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>GTP2 GUI Test</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<style>
+			h4 {
+				margin: 10px 0px;
+			}
+			p {
+				margin: 0 5px;
+			}
+			pre {
+				white-space: pre-wrap;
+			}
+			textarea {
+				resize: vertical;
+			}
+			.container {
+				display: grid;
+				grid-template-columns: auto auto;
+			}
+			.result {
+				background: #dddddd;
+				padding: 5px 15px;
+				margin-bottom: 15px;
+			}
+			.explain {
+				max-width: 500px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div>
+				Home
+			</div>
+			<ul>
+				<li>
+					<a href="/model/small">Small</a>
+				</li>
+				<li>
+					<a href="/model/medium">Medium</a>
+				</li>
+			</ul>
+		</div>
+	</body>
 </html>
