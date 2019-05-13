@@ -29,19 +29,29 @@ def include_model_medium():
     return render_template("medium.html")
 
 
-@app.route("/gtp2", methods=['POST'])
-def convert():
+@app.route("/gtp2/small", methods=['POST'])
+def convert_small():
     json = request.get_json()
     if 'seed' in json.keys():
         print(json)
-        model_result = interact_model(
-            json['seed'], float(json['temperature']), json['top_k'])
+        model_result = interact_model('117M',
+                                      json['seed'], float(json['temperature']), json['top_k'])
         return jsonify(data=model_result)
     return 'error'
 
 
-def interact_model(raw_text, temperature, top_k):
-    model_name = '117M'
+@app.route("/gtp2/medium", methods=['POST'])
+def convert_medium():
+    json = request.get_json()
+    if 'seed' in json.keys():
+        print(json)
+        model_result = interact_model('345M',
+                                      json['seed'], float(json['temperature']), json['top_k'])
+        return jsonify(data=model_result)
+    return 'error'
+
+
+def interact_model(model_name, raw_text, temperature, top_k):
     seed = None
     nsamples = 1
     batch_size = 1

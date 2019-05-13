@@ -151,7 +151,7 @@ Fred is walking</textarea
 					let output = document.createElement("div");
 					output.id = `output_${currentIteration}`;
 					output.className = "result";
-					output.innerHTML = `<hr/><b>Iteration ${currentIteration}</b><p>Waiting for repsonse (may take a minute)...</p><hr/>`;
+					output.innerHTML = `<hr/><b>Iteration ${currentIteration}</b><p>Waiting for repsonse (may take a few minutes)...</p><hr/>`;
 					outputBox.prepend(output);
 
 					getGPT2Sample(
@@ -175,7 +175,7 @@ Fred is walking</textarea
 				temperature = "1",
 				top_k = "40"
 			) {
-				const path = `${window.location.origin}/gtp2`;
+				const path = `${window.location.origin}/gtp2/medium`;
 				const content = {
 					method: "POST",
 					headers: {
@@ -227,6 +227,8 @@ Fred is walking</textarea
 			function postResult(data) {
 				const outputArea = document.getElementById(`output_${data.id}`);
 
+				let splitResult = data.result.split("<|endoftext|>");
+
 				let output = `<hr/>`;
 				output += `<h4>Iteration ${data.id}</h4>`;
 				output += `<p>Temperature: ${data.temperature}</p>`;
@@ -237,7 +239,7 @@ Fred is walking</textarea
 					data.timestampDuration
 				} seconds</p>`;
 				output += `<br/><p><b>Seed text:</b><br/><br/>${data.seed}</p>`;
-				output += `<br/><p><b>Result:</b><br/><br/>${data.result}</p>`;
+				output += `<br/><p><b>Result:</b><br/><br/>${splitResult}</p>`;
 				output += `<hr/>`;
 				outputArea.innerHTML = output;
 
