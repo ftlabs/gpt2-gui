@@ -138,7 +138,12 @@ def interact_model(model_name, raw_text, temperature, top_k):
                     print("=" * 40 + " SAMPLE " +
                           str(generated) + " " + "=" * 40)
                     print(text)
-                    return text
+
+                    single_sample_text = text.split('<|endoftext|>')
+                    print("=" * 40)
+                    print(single_sample_text[0])
+                    print("=" * 40)
+                    return single_sample_text[0]
             print("=" * 80)
 
 
