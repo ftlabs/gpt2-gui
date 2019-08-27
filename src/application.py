@@ -28,6 +28,10 @@ def include_model_small():
 def include_model_medium():
     return render_template("medium.html")
 
+@app.route("/model/large")
+def include_model_large():
+    return render_template("large.html")
+
 
 @app.route("/gtp2/small", methods=['POST'])
 def convert_small():
@@ -46,6 +50,16 @@ def convert_medium():
     if 'seed' in json.keys():
         print(json)
         model_result = interact_model('345M',
+                                      json['seed'], float(json['temperature']), json['top_k'])
+        return jsonify(data=model_result)
+    return 'error'
+
+@app.route("/gtp2/large", methods=['POST'])
+def convert_large():
+    json = request.get_json()
+    if 'seed' in json.keys():
+        print(json)
+        model_result = interact_model('774M',
                                       json['seed'], float(json['temperature']), json['top_k'])
         return jsonify(data=model_result)
     return 'error'
