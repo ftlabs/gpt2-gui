@@ -25,6 +25,7 @@ pip3 install Flask flask-cors tensorflow==1.13.1
 pip3 install -r requirements.txt
 python3 download_model.py 117M
 python3 download_model.py 345M
+python3 download_model.py 774M
 ```
 
 ## Running
@@ -34,6 +35,7 @@ In terminal:
 ```
 python3 application.py
 ```
+
 
 -   Go to [http://0.0.0.0:80](http://0.0.0.0:80)
 -   Insert the text you want to use as a seed in the text field and hit submit
@@ -62,7 +64,7 @@ So had to settle for a custom EC2 build.
     -   Auto-assign Public IP to _Enable_
     -   Otherwise Default settings
 -   **Step 4**
-    -   Default settings
+    -   Set 12 GBs of storage
 -   **Step 5**
     -   `teamDL: labs@ft.com`
     -   `systemCode: ftlabs-gpt2`
@@ -75,6 +77,13 @@ So had to settle for a custom EC2 build.
 -   **Step 7**
     -   Create using new key (currently `ftlabs-gpt.pem`) or ley you already have access to
 
+
+### Connect to instance
+
+- `cd .aws`
+- `ssh -i "ftlabs-gpt2-key.pem" ec2-54-194-234-190.eu-west-1.compute.amazonaws.com`
+
+
 ### Installing the repo and requirements
 
 ```
@@ -85,6 +94,7 @@ sudo pip3 install Flask flask-cors tensorflow==1.13.1
 sudo pip3 install -r requirements.txt
 sudo python3 download_model.py 117M
 sudo python3 download_model.py 345M
+sudo python3 download_model.py 774M
 ```
 
 ### Add a cron job to restart the server on reboot
