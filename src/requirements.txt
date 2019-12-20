@@ -84,6 +84,6 @@ ujson==1.35
 urllib3==1.25.7
 wcwidth==0.1.7
 webencodings==0.5.1
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 wrapt==1.11.2
 zope.interface==4.6.0
